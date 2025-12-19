@@ -1,48 +1,31 @@
 const { 
   Client, 
   GatewayIntentBits, 
-  PermissionFlagsBits 
+  Events 
 } = require("discord.js");
 
+// Criação do client com intents PERMITIDAS
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
-  ]
+  ],
 });
 
-client.once("ready", () => {
-  console.log(`✅ Bot online como ${client.user.tag}`);
+// Evento: bot pronto
+client.once(Events.ClientReady, (c) => {
+  console.log(`✅ Bot online como ${c.user.tag}`);
 });
 
-client.on("messageCreate", async (message) => {
+// Evento: mensagem
+client.on(Events.MessageCreate, (message) => {
   if (message.author.bot) return;
 
-  // comando zcl (sem /)
-  if (message.content.toLowerCase() === "zcl") {
-
-    // permissão do usuário
-    if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-      return message.reply("❌ Você não tem permissão para usar este comando.");
-    }
-
-    // permissão do bot
-    if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageMessages)) {
-      return message.reply("❌ Eu não tenho permissão para apagar mensagens.");
-    }
-
-    try {
-      await message.channel.bulkDelete(100, true);
-
-      const msg = await message.channel.send("🧹 100 mensagens apagadas!");
-      setTimeout(() => msg.delete(), 3000);
-
-    } catch (err) {
-      console.error(err);
-      message.reply("⚠️ Não consegui apagar mensagens (14 dias+).");
-    }
+  if (message.content === "!ping") {
+    message.reply("🏓 Pong!");
   }
 });
 
+// Login com o token (Railway)
 client.login(process.env.TOKEN);
